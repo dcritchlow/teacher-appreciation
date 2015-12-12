@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.VisualBasic.FileIO;
 using Microsoft.Web.Mvc;
-using FieldType = Microsoft.Ajax.Utilities.FieldType;
+using TeacherAppreciation.Infrastructure;
+using TeacherAppreciation.Models;
 
 namespace TeacherAppreciation.Controllers
 {
@@ -21,43 +21,41 @@ namespace TeacherAppreciation.Controllers
         }
 
         [HttpPost]
-        public ActionResult Load(HttpPostedFileBase inputFile)
+        public ActionResult Entries(HttpPostedFileBase inputFile)
         {
-            var entries = new DataTable();
-            entries.Columns.Add("Submission_ID");
-            entries.Columns.Add("Date_Submitted");
-            entries.Columns.Add("Teacher_Full_Name");
-            entries.Columns.Add("Teacher_Email_Address");
-            entries.Columns.Add("Teacher_Phone");
-            entries.Columns.Add("School");
-            entries.Columns.Add("District");
-            entries.Columns.Add("Current_Teaching_Position");
-            entries.Columns.Add("Current_member");
-            entries.Columns.Add("Question1");
-            entries.Columns.Add("Question2");
-            entries.Columns.Add("Submitter_Full_Name");
-            entries.Columns.Add("Submitter_Email_Address");
-            entries.Columns.Add("Submitter_Phone");
+            var entries = BuildEntriesDataTable();
 
-            var file = Path.GetFileName(inputFile.FileName);
+            var tempFilePath = WriteDataToTempFile(inputFile);
 
-            BinaryReader br = new BinaryReader(inputFile.InputStream);
-            byte[] binaryData = br.ReadBytes(Convert.ToInt32(inputFile.InputStream.Length));
-            System.IO.File.WriteAllBytes(Path.GetTempPath() + file, binaryData);
+            CleanUpBadlyFormattedCsvFile(tempFilePath);
 
-            var tempFile = Path.GetTempPath() + file;
+            var modelList = GetEntries(tempFilePath, entries);
 
-            var lineId = "(^[0-9]{4,})";
-            var makeOneLine = "\\s\\r?\\n";
-            var splitLinesOnId = "%([0-9]{4,})";
-            var replaceMultCommasWithOne = ",{2,}";
-            System.IO.File.WriteAllText(tempFile, Regex.Replace(System.IO.File.ReadAllText(tempFile), lineId.ToString(), "%$1", RegexOptions.Multiline));
-            System.IO.File.WriteAllText(tempFile, Regex.Replace(System.IO.File.ReadAllText(tempFile), makeOneLine.ToString(), "", RegexOptions.Multiline));
-            System.IO.File.WriteAllText(tempFile, Regex.Replace(System.IO.File.ReadAllText(tempFile), splitLinesOnId.ToString(), "\r\n$1", RegexOptions.Multiline));
-            System.IO.File.WriteAllText(tempFile, Regex.Replace(System.IO.File.ReadAllText(tempFile), replaceMultCommasWithOne.ToString(), ",", RegexOptions.Multiline));
+            return View(modelList);
+        }
 
+        /// <summary>
+        /// Convenience Method for using MVC Futures RedirectToAction without this
+        /// </summary>
+        /// <typeparam name="TController"></typeparam>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        protected ActionResult RedirectToAction<TController>(Expression<Action<TController>> action)
+           where TController : Controller
+        {
+            return ControllerExtensions.RedirectToAction(this, action);
+        }
 
-            using (TextFieldParser parser = new TextFieldParser(tempFile))
+        #region Private Methods
+        /// <summary>
+        /// Parse the csv file fields
+        /// </summary>
+        /// <param name="tempFilePath"></param>
+        /// <param name="entries"></param>
+        /// <returns></returns>
+        private List<TeacherAppreciationForm> GetEntries(string tempFilePath, DataTable entries)
+        {
+            using (TextFieldParser parser = new TextFieldParser(tempFilePath))
             {
                 parser.TextFieldType = Microsoft.VisualBasic.FileIO.FieldType.Delimited;
                 parser.SetDelimiters(",");
@@ -67,26 +65,83 @@ namespace TeacherAppreciation.Controllers
                 var count = 0;
                 while (parser.PeekChars(1) != null)
                 {
-                    var cleanFieldRowCells = parser.ReadFields().Select(f => f.Trim(new[] { ' ', '"' }));
+                    string[] rowCells = parser.ReadFields();
 
-//                    var line = String.Join(" | ", cleanFieldRowCells);
-                    
                     if (count != 0)
                     {
-                        entries.Rows.Add(cleanFieldRowCells.ToArray());
+                        entries.Rows.Add(Utilities.CheckNotNull(rowCells));
                     }
                     count++;
                 }
             }
-
-
-            return PartialView();
+            var modelList = Utilities.ConvertToList<TeacherAppreciationForm>(entries);
+            return modelList;
         }
 
-        protected ActionResult RedirectToAction<TController>(Expression<Action<TController>> action)
-           where TController : Controller
+        /// <summary>
+        /// Clean up badly formatted csv file
+        /// </summary>
+        /// <param name="tempFilePath"></param>
+        private void CleanUpBadlyFormattedCsvFile(string tempFilePath)
         {
-            return ControllerExtensions.RedirectToAction(this, action);
+            var lineId = "(^[0-9]{4,})";
+            var makeOneLine = "\\r?\\n";
+            var splitLinesOnId = "%([0-9]{4,})";
+            var replaceMultCommas = ",{2,}";
+            var removeQuotes = "\"?";
+            System.IO.File.WriteAllText(tempFilePath,
+                Regex.Replace(System.IO.File.ReadAllText(tempFilePath), lineId, "%$1", RegexOptions.Multiline));
+            System.IO.File.WriteAllText(tempFilePath,
+                Regex.Replace(System.IO.File.ReadAllText(tempFilePath), makeOneLine, "", RegexOptions.Multiline));
+            System.IO.File.WriteAllText(tempFilePath,
+                Regex.Replace(System.IO.File.ReadAllText(tempFilePath), splitLinesOnId, "\r\n$1",
+                    RegexOptions.Multiline));
+            System.IO.File.WriteAllText(tempFilePath,
+                Regex.Replace(System.IO.File.ReadAllText(tempFilePath), replaceMultCommas, "", RegexOptions.Multiline));
+            System.IO.File.WriteAllText(tempFilePath,
+                Regex.Replace(System.IO.File.ReadAllText(tempFilePath), removeQuotes, "", RegexOptions.Multiline));
         }
+
+        /// <summary>
+        /// Write file inputstream to temp file in users Temporary file path
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <returns></returns>
+        private string WriteDataToTempFile(HttpPostedFileBase inputFile)
+        {
+            var file = Path.GetFileName(inputFile.FileName);
+
+            BinaryReader br = new BinaryReader(inputFile.InputStream);
+            byte[] binaryData = br.ReadBytes(Convert.ToInt32(inputFile.InputStream.Length));
+            System.IO.File.WriteAllBytes(Path.GetTempPath() + file, binaryData);
+            return Path.GetTempPath() + file;
+        }
+
+        /// <summary>
+        /// Build datatable to hold submission entries
+        /// </summary>
+        /// <returns></returns>
+        private DataTable BuildEntriesDataTable()
+        {
+            var entries = new DataTable();
+            entries.Columns.Add("SubmissionId");
+            entries.Columns.Add("DateSubmitted");
+            entries.Columns.Add("TeachersFullName");
+            entries.Columns.Add("TeachersEmailAddress");
+            entries.Columns.Add("TeachersPhone");
+            entries.Columns.Add("School");
+            entries.Columns.Add("District");
+            entries.Columns.Add("CurrentTeachingPosition");
+            entries.Columns.Add("CurrentMember");
+            entries.Columns.Add("Question1");
+            entries.Columns.Add("Question2");
+            entries.Columns.Add("SubmittersFullName");
+            entries.Columns.Add("SubmittersEmailAddress");
+            entries.Columns.Add("SubmittersPhone");
+            return entries;
+        }
+
+        #endregion
+        
     }
 }

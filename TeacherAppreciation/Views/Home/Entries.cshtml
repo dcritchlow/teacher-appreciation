@@ -1,0 +1,31 @@
+﻿@model System.Collections.Generic.List<TeacherAppreciation.Models.TeacherAppreciationForm>
+
+@{
+    ViewBag.Title = "Entries";
+}
+
+<h2>Entries: @Model.Count</h2>
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>Date Submitted</th>
+        <th>Teachers Full Name</th>
+        <th>Current Teaching Position</th>
+        <th>School</th>
+        <th>District</th>
+        <th>Current Member</th>
+    </tr>
+    </thead>
+    <tbody class="row-link" data-link="row">
+        @foreach (var entry in Model)
+        {
+            <tr id="@entry.SubmissionId">
+                <td>@entry.DateSubmitted</td>
+                <td>@entry.TeachersFullName</td>
+                <td>@entry.CurrentTeachingPosition</td>
+                <td>@entry.School</td>
+                <td>@entry.District</td>
+                <td>@entry.CurrentMember</td>
+            </tr>
+        }
+</table>

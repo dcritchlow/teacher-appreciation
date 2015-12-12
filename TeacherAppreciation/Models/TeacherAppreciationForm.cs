@@ -2,6 +2,8 @@
 {
     public class TeacherAppreciationForm
     {
+        public string SubmissionId { get; set; }
+        public string DateSubmitted { get; set; }
         public string TeachersFullName { get; set; }
         public string TeachersEmailAddress { get; set; }
         public string TeachersPhone { get; set; }

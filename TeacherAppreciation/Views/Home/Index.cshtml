@@ -11,12 +11,12 @@
     </div>
 </div>*@
 
-@using (Html.BeginForm("Load", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Entries", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <h2>Load Submissions</h2>
     <div class="form-group">
-        <label for="inputFile">File input</label>
-        <input type="file" id="inputFile" name="inputFile">
+        <label for="inputFile">CSV File</label>
+        <input type="file" id="inputFile" name="inputFile" accept=".csv">
         <p class="help-block">Choose your csv file</p>
     </div>
     <button type="submit" class="btn btn-success">Load File</button>

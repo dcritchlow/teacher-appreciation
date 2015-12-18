@@ -31,9 +31,18 @@ main.mdl-layout__content {
   margin-bottom: 48px;
 }
 
+.table-header {
+    display: inline-flex;
+    /*margin-top: 0;*/
+    /*padding-left: 3em;*/
+}
 .table-header h4 {
     margin-top: 0;
     padding-left: 3em;
+}
+
+.table-header button {
+    margin-left: 1em;
 }
 .entries {
     margin-left: 5em;

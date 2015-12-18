@@ -11,13 +11,38 @@
     </div>
 </div>*@
 
-@using (Html.BeginForm("Entries", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Entries", "Home", FormMethod.Post, new {enctype = "multipart/form-data", @id="form"}))
 {
-    <h2>Load Submissions</h2>
+    @*<h2>Load Submissions</h2>
     <div class="form-group">
         <label for="inputFile">CSV File</label>
         <input type="file" id="inputFile" name="inputFile" accept=".csv">
         <p class="help-block">Choose your csv file</p>
     </div>
-    <button type="submit" class="btn btn-success">Load File</button>
+    <button type="submit" class="btn btn-success">Load File</button>*@
+
+<section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+    
+    <div class="main-card-wide mdl-card mdl-cell mdl-cell--12-col">
+        <div class="mdl-card__title">
+
+        </div>
+        <div class="mdl-card__supporting-text">
+            CSV File
+            <br/>
+            <input type="file" id="inputFile" name="inputFile" accept=".csv">
+            <br/>
+            <div class="alert alert-warning hidden" role="alert" id="alert">
+                Load a File First!
+            </div>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id="loadFileButton">
+                Load File
+            </a>
+            <div class="mdl-layout-spacer"></div>
+            <i class="material-icons">file_upload</i>
+        </div>
+    </div>
+</section>
 }

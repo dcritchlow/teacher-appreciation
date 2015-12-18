@@ -4,8 +4,11 @@
     ViewBag.Title = "Entries";
 }
 
-<h2>Entries: @Model.Count</h2>
-<table class="table table-hover">
+<div class="table-header">
+    <h4>Total: @Model.Count</h4>
+</div>
+
+@*<table class="table table-hover">
     <thead>
     <tr>
         <th>Date Submitted</th>
@@ -17,15 +20,41 @@
     </tr>
     </thead>
     <tbody class="row-link" data-link="row">
+    @foreach (var entry in Model)
+    {
+        <tr id="@entry.SubmissionId">
+            <td>@entry.DateSubmitted</td>
+            <td>@entry.TeachersFullName</td>
+            <td>@entry.CurrentTeachingPosition</td>
+            <td>@entry.School</td>
+            <td>@entry.District</td>
+            <td>@entry.CurrentMember</td>
+        </tr>
+    }
+</table>*@
+
+<table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp entries">
+    <thead>
+        <tr>
+            <th class="mdl-data-table__cell--non-numeric">Date Submitted</th>
+            <th class="mdl-data-table__cell--non-numeric"`>Teachers Full Name</th>
+            <th class="mdl-data-table__cell--non-numeric">Current Teaching Position</th>
+            <th class="mdl-data-table__cell--non-numeric">School</th>
+            <th class="mdl-data-table__cell--non-numeric">District</th>
+            <th class="mdl-data-table__cell--non-numeric">Current Member</th>
+        </tr>
+    </thead>
+    <tbody>
         @foreach (var entry in Model)
         {
             <tr id="@entry.SubmissionId">
-                <td>@entry.DateSubmitted</td>
-                <td>@entry.TeachersFullName</td>
-                <td>@entry.CurrentTeachingPosition</td>
-                <td>@entry.School</td>
-                <td>@entry.District</td>
-                <td>@entry.CurrentMember</td>
+                <td class="mdl-data-table__cell--non-numeric">@entry.DateSubmitted</td>
+                <td class="mdl-data-table__cell--non-numeric">@entry.TeachersFullName</td>
+                <td class="mdl-data-table__cell--non-numeric">@entry.CurrentTeachingPosition</td>
+                <td class="mdl-data-table__cell--non-numeric">@entry.School</td>
+                <td class="mdl-data-table__cell--non-numeric">@entry.District</td>
+                <td class="mdl-data-table__cell--non-numeric">@entry.CurrentMember</td>
             </tr>
         }
+    </tbody>
 </table>

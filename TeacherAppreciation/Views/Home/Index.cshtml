@@ -2,24 +2,8 @@
     ViewBag.Title = "Teacher Appreciation";
 }
 
-@*<div class="row">
-    <div class="col-md-12">
-        
-        <h2>Load Submissions</h2>
-        <p class="lead">Load csv file of submissions</p>
-        <button type="button" class="btn btn-primary">Open</button>
-    </div>
-</div>*@
-
 @using (Html.BeginForm("Entries", "Home", FormMethod.Post, new {enctype = "multipart/form-data", @id="form"}))
 {
-    @*<h2>Load Submissions</h2>
-    <div class="form-group">
-        <label for="inputFile">CSV File</label>
-        <input type="file" id="inputFile" name="inputFile" accept=".csv">
-        <p class="help-block">Choose your csv file</p>
-    </div>
-    <button type="submit" class="btn btn-success">Load File</button>*@
 
 <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
     

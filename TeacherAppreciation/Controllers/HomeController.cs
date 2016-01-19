@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.VisualBasic.FileIO;
 using Microsoft.Web.Mvc;
+using TeacherAppreciation.Excel;
 using TeacherAppreciation.Infrastructure;
 using TeacherAppreciation.Models;
 
@@ -15,8 +17,11 @@ namespace TeacherAppreciation.Controllers
 {
     public class HomeController : Controller
     {
+        private static List<TeacherAppreciationForm> _modelList;
+
         public ActionResult Index()
         {
+            _modelList = null;
             return View();
         }
 
@@ -29,9 +34,18 @@ namespace TeacherAppreciation.Controllers
 
             CleanUpBadlyFormattedCsvFile(tempFilePath);
 
-            var modelList = GetEntries(tempFilePath, entries);
+            _modelList = GetEntries(tempFilePath, entries);
 
-            return View(modelList);
+            return View(_modelList);
+        }
+
+        public void ExportToExcel()
+        {
+            if (_modelList != null)
+            {
+                var fileName = "Teacher_Appreciation_Entries_" + DateTime.Now + ".xlsx";
+                ExportExcel.CreateExcelDocument(_modelList, fileName, System.Web.HttpContext.Current.Response);
+            }
         }
 
         /// <summary>

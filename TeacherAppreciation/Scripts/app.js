@@ -4,13 +4,15 @@
     teacher(window.jQuery, window, document);
 
 }(function ($, window, document) {
+    var path = window.location.pathname;
 
     $(function () {
-
+        console.log(path);
         var form = $("#form");
         var loadFileButton = $("#loadFileButton");
         var inputFile = $('#inputFile');
         var alert = $("#alert");
+        var exportToExcel = $("#exportToExcel");
 
         loadFileButton.on({
             "click": function(e) {
@@ -31,12 +33,13 @@
                 alert.addClass("hidden");
             }
         });
+
+        exportToExcel.on({
+            "click": function () {
+                var url = "ExportToExcel";
+                $('<iframe id="iframe" src= "' + url + '"></iframe>').appendTo('body').hide();
+            }
+        });
     });
-
-    function loadFile(file)
-    {
-        var data = { inputFile: file }
-        
-    }
-
+    
 }));

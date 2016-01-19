@@ -44,6 +44,10 @@ main.mdl-layout__content {
 .table-header button {
     margin-left: 1em;
 }
-.entries {
-    margin-left: 5em;
+
+
+@media (min-width: 1170px) {
+    .entries {
+        margin-left: 5em;
+    }
 }

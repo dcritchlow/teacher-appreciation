@@ -19,7 +19,7 @@ namespace TeacherAppreciation.Excel
         /// <summary>
         /// Create an Excel file, and write it out to a MemoryStream (rather than directly to a file)
         /// </summary>
-        /// <param name="dt">DataTable containing the data to be written to the Excel.</param>
+        /// <param name="ds">DataTable containing the data to be written to the Excel.</param>
         /// <param name="filename">The filename (without a path) to call the new Excel file.</param>
         /// <param name="Response">HttpResponse of the current page.</param>
         /// <returns>True if it was created succesfully, otherwise false.</returns>

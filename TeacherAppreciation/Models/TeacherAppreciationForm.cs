@@ -16,5 +16,6 @@
         public string SubmittersFullName { get; set; }
         public string SubmittersEmailAddress { get; set; }
         public string SubmittersPhone { get; set; }
+        public string RelationshipToTheTeacher { get; set; }
     }
 }

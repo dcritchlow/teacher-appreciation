@@ -152,6 +152,7 @@ namespace TeacherAppreciation.Controllers
             entries.Columns.Add("SubmittersFullName");
             entries.Columns.Add("SubmittersEmailAddress");
             entries.Columns.Add("SubmittersPhone");
+            entries.Columns.Add("RelationshipToTheTeacher");
             return entries;
         }
 
